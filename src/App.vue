@@ -10,7 +10,7 @@
       >
         <b-navbar-brand to="/">MigrationAdvisor</b-navbar-brand>
         <b-navbar-nav>
-          <b-nav-item to="/dataset">Search</b-nav-item>
+          <b-nav-item to="/search">Search</b-nav-item>
           <b-nav-item to="/dataset">Dataset</b-nav-item>
           <b-nav-item to="/about">About</b-nav-item>
         </b-navbar-nav>
@@ -37,7 +37,6 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 

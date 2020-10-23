@@ -1,18 +1,22 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <MigrationRecEntry rec="Welcome to Your Vue.js App" />
+  <div id="home" class="home">
+    <b-jumbotron>
+    <template #header>Migration Advisor</template>
+
+    <template #lead>
+      Through an intelligent analysis of existing GitHub repositories, 
+        we recommend the most suitable library migrations for you.
+    </template>
+      <hr class="my-4">
+      <b-button variant="primary" href="#">Try it out!</b-button>
+    </b-jumbotron>
   </div>
 </template>
 
 <script>
-import MigrationRecEntry from "@/components/MigrationRecEntry.vue";
-
 export default {
   name: "App",
-  components: {
-    MigrationRecEntry,
-  },
+  components: {},
   data: () => ({
     fromLib: "org.json:json",
   }),
