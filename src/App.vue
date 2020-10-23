@@ -18,19 +18,36 @@
           <b-nav-form>
             <b-form-input
               size="sm"
+              v-model="fromLib"
               class="mr-sm-2"
               placeholder="Search a Java library..."
             ></b-form-input>
-            <b-button size="sm" class="my-2 my-sm-0" type="submit" 
+            <b-button
+              size="sm"
+              class="my-2 my-sm-0"
+              type="submit"
+              :to="'/search/' + fromLib"
               >Search</b-button
             >
           </b-nav-form></b-navbar-nav
         >
       </b-navbar>
     </div>
-    <router-view />
+    <div id="center-page">
+      <router-view />
+    </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "App",
+  components: {},
+  data: () => ({
+    fromLib: "",
+  }),
+};
+</script>
 
 <style>
 #app {
@@ -53,4 +70,11 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }*/
+
+#center-page {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-right: 50px;
+  margin-left: 50px;
+}
 </style>

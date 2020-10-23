@@ -1,6 +1,8 @@
 <template>
   <div class="about">
     <h2>About</h2>
+    <h3> Omitted During Double-Blind Review </h3>
+    <!--
     <h3>Contact</h3>
     <ol>
       <li>
@@ -32,6 +34,6 @@
           >Download PDF</b-link
         >
       </li>
-    </ol>
+    </ol>-->
   </div>
 </template>
