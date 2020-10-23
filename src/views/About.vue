@@ -1,6 +1,5 @@
 <template>
   <div class="about">
-    <h2>About</h2>
     <h3> Omitted During Double-Blind Review </h3>
     <!--
     <h3>Contact</h3>
