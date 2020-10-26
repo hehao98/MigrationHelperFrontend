@@ -7,7 +7,7 @@ function encodeQueryData(data) {
   return ret.join("&");
 }
 
-async function getRecommendation(fromLib, page, size) {
+async function getRecommendationAsync(fromLib, page, size) {
   const url = baseUrl + "recommend?" + encodeQueryData({
     fromLib: fromLib,
     page: page,
@@ -17,4 +17,4 @@ async function getRecommendation(fromLib, page, size) {
   return await response.json();
 }
 
-export { getRecommendation };
+export { getRecommendationAsync };
