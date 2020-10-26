@@ -4,18 +4,23 @@
       {{ errorMessage }}
     </b-alert>
 
-    <b-card
-      :header="'Source Library: ' + $route.params.fromLib"
-      header-tag="header"
-    >
-      <b-card-text>Header and footers using props.</b-card-text>
+    <b-card header-tag="header">
+      <template #header>
+        Basic Information of Source Library <code>{{ $route.params.fromLib }}</code>
+      </template>
+      <library-card :lib="$route.params.fromLib"></library-card>
     </b-card>
 
     <hr class="my-4" />
 
+    <h2 style="text-align:center">
+      Recommended Migration Targets for <code>{{ $route.params.fromLib }}</code>
+    </h2>
+
     <b-table
       striped
       hover
+      responsive
       :items="tableContents"
       :fields="tableFields"
       :busy="loading"
@@ -35,24 +40,7 @@
 
       <template #row-details="row">
         <b-card>
-          <b-row class="mb-2">
-            <b-col sm="3" class="text-sm-right"
-              ><b>Library Description:</b></b-col
-            >
-            <b-col>{{ row.item.RS }}</b-col>
-          </b-row>
-
-          <b-row class="mb-2">
-            <b-col sm="3" class="text-sm-right"><b>Maven Central:</b></b-col>
-            <b-col>{{ row.item.DS }}</b-col>
-          </b-row>
-
-          <b-row class="mb-2">
-            <b-col sm="3" class="text-sm-right"
-              ><b>Library Repository:</b></b-col
-            >
-            <b-col>{{ row.item.DS }}</b-col>
-          </b-row>
+          <library-card :lib="row.item.targetLibrary"></library-card>
 
           <hr class="my-4" />
 
@@ -61,6 +49,7 @@
               <b-table
                 striped
                 hover
+                responsive
                 :items="row.item.refs"
                 :fields="['repoName', 'startCommit', 'endCommit', 'fileName']"
               >
@@ -96,8 +85,10 @@
 
 <script>
 import { getRecommendationAsync } from "@/rest.js";
+import LibraryCard from "@/components/LibraryCard.vue";
 
 export default {
+  components: { LibraryCard },
   data: () => ({
     loading: false,
     error: false,

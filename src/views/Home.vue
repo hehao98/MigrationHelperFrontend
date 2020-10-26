@@ -30,6 +30,7 @@
           Some Examples:
           <b-link to="search/org.json:json">org.json:json</b-link>,&emsp;
           <b-link to="search/junit:junit">junit:junit</b-link>,&emsp;
+          <b-link to="search/junit:junit">log4j:log4j</b-link>,&emsp;
           <b-link to="search/c3p0:c3p0">c3p0:c3p0</b-link>
         </b-col>
       </b-row>
