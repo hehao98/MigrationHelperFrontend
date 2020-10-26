@@ -6,7 +6,8 @@
 
     <b-card header-tag="header">
       <template #header>
-        Basic Information of Source Library <code>{{ $route.params.fromLib }}</code>
+        Basic Information of Source Library
+        <code>{{ $route.params.fromLib }}</code>
       </template>
       <library-card :lib="$route.params.fromLib"></library-card>
     </b-card>
@@ -32,6 +33,10 @@
         </div>
       </template>
 
+      <template #cell(targetLibrary)="row">
+        <code>{{ row.value }}</code>
+      </template>
+
       <template #cell(showDetails)="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-2">
           {{ row.detailsShowing ? "Hide" : "Show" }} Details
@@ -39,45 +44,10 @@
       </template>
 
       <template #row-details="row">
-        <b-card>
-          <library-card :lib="row.item.targetLibrary"></library-card>
-
-          <hr class="my-4" />
-
-          <b-row class="mb-2">
-            <b-col>
-              <b-table
-                striped
-                hover
-                responsive
-                :items="row.item.refs"
-                :fields="['repoName', 'startCommit', 'endCommit', 'fileName']"
-              >
-                <template #cell(repoName)="data">
-                  <b-link :href="getGitHubRepoLink(data.value)" target="_blank">
-                    {{ data.value.replace("_", "/") }}
-                  </b-link>
-                </template>
-                <template #cell(startCommit)="data">
-                  <b-link
-                    :href="getGitHubCommitLink(data.item.repoName, data.value)"
-                    target="_blank"
-                  >
-                    <code>{{ data.value.substr(33, 7) }}</code>
-                  </b-link>
-                </template>
-                <template #cell(endCommit)="data">
-                  <b-link
-                    :href="getGitHubCommitLink(data.item.repoName, data.value)"
-                    target="_blank"
-                  >
-                    <code>{{ data.value.substr(33, 7) }}</code>
-                  </b-link>
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-        </b-card>
+        <migration-target-details
+          :row="row"
+          :fromLibrary="$route.params.fromLib"
+        ></migration-target-details>
       </template>
     </b-table>
   </div>
@@ -86,9 +56,10 @@
 <script>
 import { getRecommendationAsync } from "@/rest.js";
 import LibraryCard from "@/components/LibraryCard.vue";
+import MigrationTargetDetails from "@/components/MigrationTargetDetails.vue";
 
 export default {
-  components: { LibraryCard },
+  components: { LibraryCard, MigrationTargetDetails },
   data: () => ({
     loading: false,
     error: false,
@@ -156,14 +127,6 @@ export default {
         }
         this.loading = false;
       });
-    },
-    getGitHubRepoLink(repoName) {
-      return "https://github.com/" + repoName.replace("_", "/");
-    },
-    getGitHubCommitLink(repoName, commit) {
-      return (
-        "https://github.com/" + repoName.replace("_", "/") + "/commit/" + commit
-      );
     },
   },
 };
