@@ -20,6 +20,18 @@
         </b-col>
       </b-row>
 
+      <b-row
+        v-if="info.homepageUrl != '' && info.homepageUrl != info.repositoryUrl"
+        class="mb-2"
+      >
+        <b-col sm="3" class="text-sm-right"><b>Homepage URL:</b></b-col>
+        <b-col>
+          <b-link :href="info.homepageUrl" target="_blank">{{
+            info.homepageUrl
+          }}</b-link>
+        </b-col>
+      </b-row>
+
       <b-row v-if="info.repositoryUrl != ''" class="mb-2">
         <b-col sm="3" class="text-sm-right"><b>Repository URL:</b></b-col>
         <b-col>
