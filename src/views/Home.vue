@@ -4,7 +4,7 @@
       <template #header>Migration Advisor</template>
       <template #lead>
         Tell us a Java library you want to replace, we recommend the most
-        suitable migrations for you, through an intelligent analysis of existing
+        suitable migrations for you, through an intelligent analysis upon existing
         GitHub repositories.
       </template>
       <hr class="my-4" />
@@ -30,7 +30,7 @@
           Some Examples:
           <b-link to="search/org.json:json">org.json:json</b-link>,&emsp;
           <b-link to="search/junit:junit">junit:junit</b-link>,&emsp;
-          <b-link to="search/junit:junit">log4j:log4j</b-link>,&emsp;
+          <b-link to="search/log4j:log4j">log4j:log4j</b-link>,&emsp;
           <b-link to="search/c3p0:c3p0">c3p0:c3p0</b-link>
         </b-col>
       </b-row>
