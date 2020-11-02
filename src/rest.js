@@ -20,10 +20,22 @@ async function getRecommendationAsync(fromLib, page, size) {
   return await response.json();
 }
 
+async function getRecommendationOneAync(fromLib, toLib) {
+  const url =
+    baseUrl +
+    "recommend-one?" +
+    encodeQueryData({
+      fromLib: fromLib,
+      toLib: toLib,
+    });
+  const response = await fetch(url);
+  return await response.json();
+}
+
 async function getLibraryAsync(lib) {
   const url = baseUrl + "library?" + encodeQueryData({ lib: lib });
   const response = await fetch(url);
   return await response.json();
 }
 
-export { getRecommendationAsync, getLibraryAsync };
+export { getRecommendationAsync, getRecommendationOneAync, getLibraryAsync };

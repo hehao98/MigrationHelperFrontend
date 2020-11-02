@@ -47,6 +47,7 @@
         <migration-target-details
           :row="row"
           :fromLibrary="$route.params.fromLib"
+          :toLibrary="row.item.targetLibrary"
         ></migration-target-details>
       </template>
     </b-table>
@@ -80,6 +81,7 @@ export default {
       "DS",
       "showDetails",
     ],
+    maxConfidence: 5.0,
   }),
   watch: {
     $route(to, from) {
@@ -95,14 +97,15 @@ export default {
         let item = {
           rank: rank++,
           targetLibrary: r.toLib,
-          confidence: r.confidence.toFixed(4),
+          confidence: Math.pow(r.confidence / this.maxConfidence, 0.25),
           RS: r.ruleSupport.toFixed(4),
           MS: r.messageSupport.toFixed(4),
           AS: r.apiSupport.toFixed(4),
           DS: r.distanceSupport.toFixed(4),
-          refs: r.refs,
           isConfirmed: false,
         };
+        if (item.confidence > 1) item.confidence = 1.0;
+        item.confidence = item.confidence.toFixed(4);
         c.push(item);
       }
       return c;

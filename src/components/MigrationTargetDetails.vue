@@ -6,12 +6,12 @@
 
     <h4>
       Possible Migrations from <code>{{ fromLibrary }}</code> to
-      <code>{{ row.item.targetLibrary }}</code>
+      <code>{{ toLibrary }}</code>
     </h4>
 
     <b-pagination
       v-model="currentPage"
-      :total-rows="row.item.refs.length"
+      :total-rows="refs.length"
       :per-page="perPage"
       first-text="First"
       prev-text="Prev"
@@ -25,11 +25,18 @@
       striped
       hover
       responsive
-      :items="row.item.refs"
+      :items="refs"
       :per-page="perPage"
       :current-page="currentPage"
       :fields="fields"
+      :busy="loading"
     >
+      <template #table-busy>
+        <div class="text-center text-info my-2">
+          <b-spinner class="align-middle"></b-spinner>
+          <strong>Loading Recommendation Commits...</strong>
+        </div>
+      </template>
       <template #cell(confirmed)="data">
         <b-badge :variant="data.value ? 'success' : 'secondary'">{{
           data.value ? "Confirmed" : "Unknown"
@@ -62,11 +69,14 @@
 
 <script>
 import LibraryCard from "@/components/LibraryCard.vue";
+import { getRecommendationOneAync } from "@/rest.js";
 
 export default {
-  props: ["fromLibrary", "row"],
+  props: ["fromLibrary", "toLibrary", "row"],
   components: { LibraryCard },
   data: () => ({
+    loading: true,
+    refs: [],
     currentPage: 1,
     perPage: 10,
     fields: [
@@ -77,6 +87,17 @@ export default {
       "fileName",
     ],
   }),
+  created: function() {
+    this.updateTable();
+  },
+  watch: {
+    fromLibrary: function() {
+      this.updateTable();
+    },
+    toLibrary: function() {
+      this.updateTable();
+    },
+  },
   methods: {
     getGitHubRepoLink(repoName) {
       return "https://github.com/" + repoName.replace("_", "/");
@@ -84,6 +105,15 @@ export default {
     getGitHubCommitLink(repoName, commit) {
       return (
         "https://github.com/" + repoName.replace("_", "/") + "/commit/" + commit
+      );
+    },
+    updateTable() {
+      this.loading = true;
+      getRecommendationOneAync(this.fromLibrary, this.toLibrary).then(
+        (result) => {
+          this.refs = result.refs;
+          this.loading = false;
+        }
       );
     },
   },
