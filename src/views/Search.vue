@@ -33,6 +33,62 @@
         </div>
       </template>
 
+      <template #head(rank)="data">
+        <span
+          v-b-tooltip.hover
+          title="The rank of this library by confidence. Correct migration targets are more likely to be in a higher rank. "
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(targetLibrary)="data">
+        <span
+          v-b-tooltip.hover
+          title="The name (i.e. group ID and artfiact ID) of the target migration library."
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(confidence)="data">
+        <span
+          v-b-tooltip.hover
+          title="The higher it is, the more possible this target library is a valid and frequently chosen migration target. Range: (0, 1]"
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(RS)="data">
+        <span
+          v-b-tooltip.hover
+          title="RS stands for Rule Support. It means how frequent the relevant pom.xml changes are. Range: [0, 1]"
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(MS)="data">
+        <span
+          v-b-tooltip.hover
+          title="MS stands for Message Support. It means how frequent developers states this migration in the commit messages. Range: [0, +∞)"
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(AS)="data">
+        <span
+          v-b-tooltip.hover
+          title="AS stands for API Support. It means how frequent the relevant API code changes are Range: [0.1, 1]"
+          >{{ data.label }}
+        </span>
+      </template>
+
+      <template #head(DS)="data">
+        <span
+          v-b-tooltip.hover
+          title="DS stands for Distance Support. It means how close each pair of relevant pom.xml changes are. Range: [0, 1]"
+          >{{ data.label }}
+        </span>
+      </template>
+
       <template #cell(targetLibrary)="row">
         <code>{{ row.value }}</code>
       </template>

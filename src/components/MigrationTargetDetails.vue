@@ -31,10 +31,51 @@
       :fields="fields"
       :busy="loading"
     >
+      <template #head(confirmed)="data">
+        <span
+          v-b-tooltip.hover
+          title="Whether this commit is manually confirmed by us as a migration."
+          >{{ data.label }}
+        </span>
+      </template>
+      <template #head(repoName)="data">
+        <span
+          v-b-tooltip.hover
+          :title="
+            'The GitHub repository name where a migration from ' +
+              fromLibrary +
+              ' to ' +
+              toLibrary +
+              ' happened.'
+          "
+          >{{ data.label }}
+        </span>
+      </template>
+      <template #head(startCommit)="data">
+        <span
+          v-b-tooltip.hover
+          :title="'The commit where ' + toLibrary + ' is added in pom.xml'"
+          >{{ data.label }}
+        </span>
+      </template>
+      <template #head(endCommit)="data">
+        <span
+          v-b-tooltip.hover
+          :title="'The commit where ' + fromLibrary + ' is removed in pom.xml'"
+          >{{ data.label }}
+        </span>
+      </template>
+      <template #head(fileName)="data">
+        <span
+          v-b-tooltip.hover
+          title="The path of pom.xml in this migration"
+          >{{ data.label }}
+        </span>
+      </template>
       <template #table-busy>
         <div class="text-center text-info my-2">
           <b-spinner class="align-middle"></b-spinner>
-          <strong>Loading Recommendation Commits...</strong>
+          <strong>Loading Migration Commits...</strong>
         </div>
       </template>
       <template #cell(confirmed)="data">
