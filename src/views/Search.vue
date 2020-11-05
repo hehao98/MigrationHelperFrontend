@@ -1,5 +1,18 @@
 <template>
   <div class="search">
+    <b-row>
+      <b-col sm="3" class="text-right my-auto"><b>Search a Library Here: </b></b-col>
+      <b-col sm="9">
+        <library-search-input
+          size="md"
+          buttonText="Search"
+          placeholder="Enter the Java library (groupId:artifactId) you want to replace here... (e.g. org.json:json)"
+        ></library-search-input>
+      </b-col>
+    </b-row>
+
+    <hr class="my-4" />
+
     <b-alert v-model="error" variant="danger">
       {{ errorMessage }}
     </b-alert>
@@ -18,14 +31,7 @@
       Recommended Migration Targets for <code>{{ $route.params.fromLib }}</code>
     </h2>
 
-    <b-table
-      striped
-      hover
-      responsive
-      :items="tableContents"
-      :fields="tableFields"
-      :busy="loading"
-    >
+    <b-table striped hover responsive :items="tableContents" :fields="tableFields" :busy="loading">
       <template #table-busy>
         <div class="text-center text-info my-2">
           <b-spinner class="align-middle"></b-spinner>
@@ -114,9 +120,10 @@
 import { getRecommendationAsync } from "@/rest.js";
 import LibraryCard from "@/components/LibraryCard.vue";
 import MigrationTargetDetails from "@/components/MigrationTargetDetails.vue";
+import LibrarySearchInput from "@/components/LibrarySearchInput.vue";
 
 export default {
-  components: { LibraryCard, MigrationTargetDetails },
+  components: { LibraryCard, MigrationTargetDetails, LibrarySearchInput },
   data: () => ({
     loading: false,
     error: false,
@@ -127,16 +134,7 @@ export default {
     totalPages: 0,
     totalElements: 0,
     fromLibInfo: {},
-    tableFields: [
-      "rank",
-      "targetLibrary",
-      "confidence",
-      "RS",
-      "MS",
-      "AS",
-      "DS",
-      "showDetails",
-    ],
+    tableFields: ["rank", "targetLibrary", "confidence", "RS", "MS", "AS", "DS", "showDetails"],
     maxConfidence: 5.0,
   }),
   watch: {
