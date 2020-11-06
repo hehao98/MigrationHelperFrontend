@@ -3,8 +3,8 @@
     <b-jumbotron style="margin-bottom: 30px">
       <template #header>Migration Advisor</template>
       <template #lead>
-        Tell us a Java library you want to replace, we recommend the most suitable migrations for
-        you, through an intelligent analysis upon existing GitHub repositories.
+        Tell us a Java library you want to replace, we recommend the most suitable migrations
+        through an intelligent analysis upon existing GitHub repositories.
       </template>
       <hr class="my-4" />
       <library-search-input
