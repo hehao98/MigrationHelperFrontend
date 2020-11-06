@@ -2,8 +2,7 @@ const baseUrl = "http://migration-helper.net:22568/";
 
 function encodeQueryData(data) {
   const ret = [];
-  for (let d in data)
-    ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+  for (let d in data) ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
   return ret.join("&");
 }
 
@@ -38,4 +37,27 @@ async function getLibraryAsync(lib) {
   return await response.json();
 }
 
-export { getRecommendationAsync, getRecommendationOneAync, getLibraryAsync };
+async function getLibraryWithPrefixAsync(prefix) {
+  const url =
+    baseUrl +
+    "libraries-with-prefix?" +
+    encodeQueryData({
+      prefix: prefix,
+    });
+  const response = await fetch(url);
+  return await response.json();
+}
+
+async function getLibrarySimilarAsync(libName) {
+  const url = baseUrl + "libraries-similar?" + encodeQueryData({ lib: libName });
+  const response = await fetch(url);
+  return await response.json();
+}
+
+export {
+  getRecommendationAsync,
+  getRecommendationOneAync,
+  getLibraryAsync,
+  getLibraryWithPrefixAsync,
+  getLibrarySimilarAsync,
+};

@@ -1,12 +1,12 @@
 <template>
   <div class="search">
     <b-row>
-      <b-col sm="3" class="text-right my-auto"><b>Search a Library Here: </b></b-col>
+      <b-col sm="3" class="text-right my-auto"><b>Search migrations for a library: </b></b-col>
       <b-col sm="9">
         <library-search-input
           size="md"
           buttonText="Search"
-          placeholder="Enter the Java library (groupId:artifactId) you want to replace here... (e.g. org.json:json)"
+          placeholder="Enter the Java library (groupId:artifactId) you want to replace here..."
         ></library-search-input>
       </b-col>
     </b-row>
