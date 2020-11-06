@@ -53,6 +53,7 @@
     </b-row>
 
     <b-table
+      ref="table"
       striped
       hover
       responsive
@@ -188,6 +189,15 @@ export default {
     tableFields: ["rank", "targetLibrary", "confidence", "RS", "MS", "AS", "DS", "showDetails"],
     maxConfidence: 5.0,
   }),
+  created: function() {
+    this.$refs.table.refresh();
+  },
+  watch: {
+    $route(to, from) {
+      if (to.path == from.path) return;
+      this.$refs.table.refresh();
+    },
+  },
   methods: {
     tableContentProvider(ctx, callback) {
       this.loading = true;
