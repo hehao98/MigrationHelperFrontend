@@ -2,12 +2,6 @@
 
 This repository contains the application frontend for MigrationHelper deployed [here](http://migration-helper.net).
 
-## TODOs
-
-1. 对于用户的查询步骤，添加模糊查询的接口和提示功能
-2. 对于结果展示界面，添加总结性信息和可视化图表
-3. 增强面对用户错误输入的鲁棒性和易用性
-
 ## Project setup
 
 ```

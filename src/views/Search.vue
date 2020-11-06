@@ -31,7 +31,37 @@
       Recommended Migration Targets for <code>{{ $route.params.fromLib }}</code>
     </h2>
 
-    <b-table striped hover responsive :items="tableContents" :fields="tableFields" :busy="loading">
+    <b-row>
+      <b-col sm="6">
+        <b-pagination
+          class="align-middle align-right"
+          v-model="page"
+          :total-rows="totalElements"
+          :per-page="size"
+          first-text="First"
+          prev-text="Prev"
+          next-text="Next"
+          last-text="Last"
+          first-number
+          last-number
+        ></b-pagination>
+      </b-col>
+      <b-col sm="6" class="text-right my-auto mr-auto">
+        Displaying {{ (page - 1) * size + 1 }} - {{ (page - 1) * size + size }} of
+        {{ totalElements }} results
+      </b-col>
+    </b-row>
+
+    <b-table
+      striped
+      hover
+      responsive
+      :items="tableContentProvider"
+      :fields="tableFields"
+      :busy="loading"
+      :current-page="page"
+      :per-page="size"
+    >
       <template #table-busy>
         <div class="text-center text-info my-2">
           <b-spinner class="align-middle"></b-spinner>
@@ -113,6 +143,27 @@
         ></migration-target-details>
       </template>
     </b-table>
+
+    <b-row>
+      <b-col sm="6">
+        <b-pagination
+          class="align-middle align-right"
+          v-model="page"
+          :total-rows="totalElements"
+          :per-page="size"
+          first-text="First"
+          prev-text="Prev"
+          next-text="Next"
+          last-text="Last"
+          first-number
+          last-number
+        ></b-pagination>
+      </b-col>
+      <b-col sm="6" class="text-right my-auto mr-auto">
+        Displaying {{ (page - 1) * size + 1 }} - {{ (page - 1) * size + size }} of
+        {{ totalElements }} results
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -128,7 +179,7 @@ export default {
     loading: false,
     error: false,
     errorMessage: "",
-    page: 0,
+    page: 1,
     size: 20,
     results: [],
     totalPages: 0,
@@ -137,53 +188,43 @@ export default {
     tableFields: ["rank", "targetLibrary", "confidence", "RS", "MS", "AS", "DS", "showDetails"],
     maxConfidence: 5.0,
   }),
-  watch: {
-    $route(to, from) {
-      if (to.path == from.path) return;
-      this.getRecommendation(this.$route.params.fromLib, this.page, this.size);
-    },
-  },
-  computed: {
-    tableContents: function() {
-      let c = [];
-      let rank = this.page * this.size + 1;
-      for (let r of this.results) {
-        let item = {
-          rank: rank++,
-          targetLibrary: r.toLib,
-          confidence: Math.pow(r.confidence / this.maxConfidence, 0.25),
-          RS: r.ruleSupport.toFixed(4),
-          MS: r.messageSupport.toFixed(4),
-          AS: r.apiSupport.toFixed(4),
-          DS: r.distanceSupport.toFixed(4),
-          isConfirmed: false,
-        };
-        if (item.confidence > 1) item.confidence = 1.0;
-        item.confidence = item.confidence.toFixed(4);
-        c.push(item);
-      }
-      return c;
-    },
-  },
-  created: function() {
-    this.getRecommendation(this.$route.params.fromLib, this.page, this.size);
-  },
   methods: {
-    getRecommendation(fromLib, page, size) {
+    tableContentProvider(ctx, callback) {
       this.loading = true;
-      getRecommendationAsync(fromLib, page, size).then((rec) => {
-        if ("_embedded" in rec) {
-          // No Error
-          this.error = false;
-          this.results = rec._embedded.migrationRecommendations;
-          this.totalPages = rec.page.totalPages;
-          this.totalElements = rec.page.totalElements;
-        } else {
-          this.error = true;
-          this.errorMessage = rec.error + ": " + rec.message;
+      getRecommendationAsync(this.$route.params.fromLib, ctx.currentPage - 1, ctx.perPage).then(
+        (rec) => {
+          if ("_embedded" in rec) {
+            // No Error
+            this.error = false;
+            this.results = rec._embedded.migrationRecommendations;
+            this.totalPages = rec.page.totalPages;
+            this.totalElements = rec.page.totalElements;
+          } else {
+            this.error = true;
+            this.errorMessage = rec.error + ": " + rec.message;
+          }
+          let c = [];
+          let rank = (this.page - 1) * this.size + 1;
+          for (let r of this.results) {
+            let item = {
+              rank: rank++,
+              targetLibrary: r.toLib,
+              confidence: Math.pow(r.confidence / this.maxConfidence, 0.25),
+              RS: r.ruleSupport.toFixed(4),
+              MS: r.messageSupport.toFixed(4),
+              AS: r.apiSupport.toFixed(4),
+              DS: r.distanceSupport.toFixed(4),
+              isConfirmed: false,
+            };
+            if (item.confidence > 1) item.confidence = 1.0;
+            item.confidence = item.confidence.toFixed(4);
+            c.push(item);
+          }
+          this.loading = false;
+          callback(c);
         }
-        this.loading = false;
-      });
+      );
+      return null;
     },
   },
 };
