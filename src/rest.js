@@ -54,10 +54,17 @@ async function getLibrarySimilarAsync(libName) {
   return await response.json();
 }
 
+async function getConfirmedMigrations(page, size) {
+  const url = baseUrl + "confirmed-migrations?" + encodeQueryData({ page: page, size: size });
+  const response = await fetch(url);
+  return await response.json();
+}
+
 export {
   getRecommendationAsync,
   getRecommendationOneAync,
   getLibraryAsync,
   getLibraryWithPrefixAsync,
   getLibrarySimilarAsync,
+  getConfirmedMigrations
 };
