@@ -32,7 +32,9 @@
               :key="index"
               :title="'Cluster ' + index + ' (' + subgraph.length + ' Libs)'"
               active
-              ><b-card-text>{{ subgraph }}</b-card-text></b-tab
+            >
+              <v-chart :options="echartGraphOptions[index]">sdsd</v-chart>
+              <b-card-text>{{ subgraph }}</b-card-text></b-tab
             >
           </b-tabs>
         </b-tab>
@@ -54,6 +56,7 @@ export default {
     batchSize: 300,
     totalElements: 14334,
     totalPages: 0,
+    echartGraphOptions: [],
   }),
   computed: {},
   created: function() {
@@ -89,7 +92,9 @@ export default {
           };
         } else {
           this.migrationGraph[mig.fromLib].migrations.push(i);
-          if (this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1) {
+          if (
+            this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1
+          ) {
             this.migrationGraph[mig.fromLib].toLibs.push(mig.toLib);
           }
         }
@@ -131,6 +136,61 @@ export default {
           nodes.delete(lib);
         }
         this.connectedSubGraphs.push(Array.from(currSubgraph));
+      }
+      this.connectedSubGraphs.sort((a, b) => b.length - a.length);
+
+      // For each connected subgraph, generate data for graph visualization
+      for (let subgrpah of this.connectedSubGraphs) {
+        this.echartGraphOptions.push({
+          title: {
+            text: "Les Miserables",
+            subtext: "Default layout",
+            top: "bottom",
+            left: "right",
+          },
+          tooltip: {},
+          legend: [
+            {
+              // selectedMode: 'single',
+              data: categories.map(function(a) {
+                return a.name;
+              }),
+            },
+          ],
+          animationDuration: 1500,
+          animationEasingUpdate: "quinticInOut",
+          series: [
+            {
+              name: "Les Miserables",
+              type: "graph",
+              layout: "none",
+              data: graph.nodes,
+              links: graph.links,
+              categories: categories,
+              roam: true,
+              focusNodeAdjacency: true,
+              itemStyle: {
+                borderColor: "#fff",
+                borderWidth: 1,
+                shadowBlur: 10,
+                shadowColor: "rgba(0, 0, 0, 0.3)",
+              },
+              label: {
+                position: "right",
+                formatter: "{b}",
+              },
+              lineStyle: {
+                color: "source",
+                curveness: 0.3,
+              },
+              emphasis: {
+                lineStyle: {
+                  width: 10,
+                },
+              },
+            },
+          ],
+        });
       }
     },
   },
