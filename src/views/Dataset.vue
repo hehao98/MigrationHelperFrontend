@@ -58,9 +58,9 @@ export default {
   computed: {},
   created: function() {
     getConfirmedMigrations(0, this.batchSize).then((payload) => {
-      let migrations = payload._embedded.wocConfirmedMigrations;
       this.totalElements = payload.page.totalElements;
       this.totalPages = payload.page.totalPages;
+      this.migrations.push(...payload._embedded.wocConfirmedMigrations);
       for (let i = 1; i < this.totalPages; ++i) {
         getConfirmedMigrations(i, this.batchSize).then((payload2) => {
           this.migrations.push(...payload2._embedded.wocConfirmedMigrations);
@@ -69,7 +69,6 @@ export default {
           }
         });
       }
-      this.migrations = migrations;
     });
   },
   methods: {
