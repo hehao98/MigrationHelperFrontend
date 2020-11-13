@@ -1,12 +1,18 @@
 <template>
   <div class="dataset">
-    <h1>Confirmed Java Library Migrations on GitHub</h1>
+    <h2 class="center">Overview of Our Confirmed Migration Dataset</h2>
 
-    <b-button v-on:click="initVisData()"
-      >Visualize Now<span v-if="migrations.length != totalElements">
-        (Still Incomplete)</span
-      ></b-button
-    >
+    <p>
+      In this page, we demonstrate the migration dataset we manually confirmed in our paper.
+      <br />
+      We not only show some interesting statistics, but also show a migration graph as proposed in
+      <b-link target="_blank" href="https://doi.org/10.1109/WCRE.2012.38">this paper</b-link>.
+      <br />
+      See the <b-link to="about/">About</b-link> page for where to download the relevant dataset.
+    </p>
+    <hr class="my-4" />
+
+    <span class="text-center">The data will take some time to load, so please be patient...</span>
     <b-progress :max="totalElements" height="2rem">
       <b-progress-bar :value="migrations.length">
         <span
@@ -23,22 +29,57 @@
 
     <hr class="my-4" />
 
+    <b-card-group class="my-4">
+      <b-card><animated-number :number="rules.size" /><br />Migration Rules</b-card>
+      <b-card><animated-number :number="repositories.size" /><br />Repositories</b-card>
+      <b-card><animated-number :number="commits.size" /><br />Commits</b-card>
+      <b-card
+        ><animated-number :number="migrations.length" /><br /><code>pom.xml</code> Changes</b-card
+      >
+    </b-card-group>
+
+    <b-card-group class="my-4">
+      <b-card> <v-chart class="chart-in-card" :options="echartTimeOptions"></v-chart></b-card>
+      <b-card> <v-chart class="chart-in-card" :options="echartMigrationOptions"></v-chart></b-card>
+    </b-card-group>
+    <b-card-group class="my-4">
+      <b-card>
+        <v-chart class="chart-in-card" :options="echartSourceLibraryOptions"></v-chart
+      ></b-card>
+      <b-card
+        ><v-chart class="chart-in-card" :options="echartTargetLibraryOptions"></v-chart
+      ></b-card>
+    </b-card-group>
+
+    <hr class="my-4" />
+
+    <b-button v-on:click="initGraphData()" class="m-1" variant="info"
+      >Visualize Migration Graph Now<span v-if="migrations.length != totalElements">
+        (Still Loading)</span
+      ></b-button
+    >
+    <b-alert show variant="warning"
+      >Currently it is suffering from performance issues and not very useful. We welcome any
+      contributions for improving this.</b-alert
+    >
+
     <b-card no-body>
-      <b-tabs>
-        <b-tab title="Migration Graphs" active>
-          <b-tabs card pills vertical>
-            <b-tab
-              v-for="(subgraph, index) in connectedSubGraphs"
-              :key="index"
-              :title="'Cluster ' + index + ' (' + subgraph.length + ' Libs)'"
-              active
-            >
-              <v-chart :options="echartGraphOptions[index]">sdsd</v-chart>
-              <b-card-text>{{ subgraph }}</b-card-text></b-tab
-            >
-          </b-tabs>
+      <b-tabs card pills vertical>
+        <b-tab
+          v-for="(subgraph, index) in connectedSubGraphs"
+          :key="index"
+          :title="'Cluster ' + index + ' (' + subgraph.length + ' Libs)'"
+          active
+          @click="handleTabSelect(index)"
+        >
+          <b-card class="center">
+            <b-aspect aspect="1:1">
+              <v-chart
+                class="graph-chart"
+                :options="index === currentEchartIndex ? echartGraphOptions : {}"
+              ></v-chart></b-aspect
+          ></b-card>
         </b-tab>
-        <b-tab title="Migration Data Table"> </b-tab>
       </b-tabs>
     </b-card>
   </div>
@@ -46,9 +87,14 @@
 
 <script>
 import { getConfirmedMigrations } from "@/rest.js";
+import AnimatedNumber from "@/components/AnimatedNumber.vue";
 
 export default {
+  components: { AnimatedNumber },
   data: () => ({
+    commits: new Set(),
+    rules: new Set(),
+    repositories: new Set(),
     migrations: [],
     id2arrayIndex: {},
     migrationGraph: {},
@@ -56,26 +102,50 @@ export default {
     batchSize: 300,
     totalElements: 14334,
     totalPages: 0,
-    echartGraphOptions: [],
+    currentEchartIndex: 0,
+    echartGraphOptions: {},
+    echartTimeOptions: {},
+    echartMigrationOptions: {},
+    echartSourceLibraryOptions: {},
+    echartTargetLibraryOptions: {},
   }),
   computed: {},
   created: function() {
     getConfirmedMigrations(0, this.batchSize).then((payload) => {
       this.totalElements = payload.page.totalElements;
       this.totalPages = payload.page.totalPages;
-      this.migrations.push(...payload._embedded.wocConfirmedMigrations);
+      this.updateMigrationData(payload);
       for (let i = 1; i < this.totalPages; ++i) {
         getConfirmedMigrations(i, this.batchSize).then((payload2) => {
-          this.migrations.push(...payload2._embedded.wocConfirmedMigrations);
-          if (this.migrations.length >= this.totalElements) {
-            this.initVisData();
-          }
+          this.updateMigrationData(payload2);
         });
       }
     });
   },
   methods: {
-    initVisData() {
+    updateMigrationData(payload) {
+      this.migrations.push(...payload._embedded.wocConfirmedMigrations);
+      for (let mig of payload._embedded.wocConfirmedMigrations) {
+        this.commits.add(mig.startCommit);
+        this.commits.add(mig.endCommit);
+        this.repositories.add(mig.repoName);
+        this.rules.add(mig.fromLib + " " + mig.toLib);
+      }
+      this.updateGraphs();
+    },
+    updateGraphs() {
+      this.echartTimeOptions = {};
+      this.echartMigrationOptions = {};
+      this.echartSourceLibraryOptions = {};
+      this.echartTargetLibraryOptions = {};
+    },
+    initGraphData() {
+      if (this.migrations.length === 0) return;
+      this.id2arrayIndex = [];
+      this.migrationGraph = {};
+      this.connectedSubGraphs = [];
+      this.echartGraphOptions = {};
+
       // Make an id2arrayIndex map
       for (let i = 0; i < this.migrations.length; ++i) {
         this.id2arrayIndex[this.migrations[i].id] = i;
@@ -92,9 +162,7 @@ export default {
           };
         } else {
           this.migrationGraph[mig.fromLib].migrations.push(i);
-          if (
-            this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1
-          ) {
+          if (this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1) {
             this.migrationGraph[mig.fromLib].toLibs.push(mig.toLib);
           }
         }
@@ -138,61 +206,82 @@ export default {
         this.connectedSubGraphs.push(Array.from(currSubgraph));
       }
       this.connectedSubGraphs.sort((a, b) => b.length - a.length);
-
-      // For each connected subgraph, generate data for graph visualization
-      for (let subgrpah of this.connectedSubGraphs) {
-        this.echartGraphOptions.push({
-          title: {
-            text: "Les Miserables",
-            subtext: "Default layout",
-            top: "bottom",
-            left: "right",
-          },
-          tooltip: {},
-          legend: [
-            {
-              // selectedMode: 'single',
-              data: categories.map(function(a) {
-                return a.name;
-              }),
-            },
-          ],
-          animationDuration: 1500,
-          animationEasingUpdate: "quinticInOut",
-          series: [
-            {
-              name: "Les Miserables",
-              type: "graph",
-              layout: "none",
-              data: graph.nodes,
-              links: graph.links,
-              categories: categories,
-              roam: true,
-              focusNodeAdjacency: true,
-              itemStyle: {
-                borderColor: "#fff",
-                borderWidth: 1,
-                shadowBlur: 10,
-                shadowColor: "rgba(0, 0, 0, 0.3)",
-              },
-              label: {
-                position: "right",
-                formatter: "{b}",
-              },
-              lineStyle: {
-                color: "source",
-                curveness: 0.3,
-              },
-              emphasis: {
-                lineStyle: {
-                  width: 10,
-                },
-              },
-            },
-          ],
+      this.handleTabSelect(0);
+    },
+    handleTabSelect(currentIndex) {
+      this.currentEchartIndex = currentIndex;
+      let subgraph = this.connectedSubGraphs[currentIndex];
+      let subgraphNodes = [];
+      let subgraphLinks = [];
+      for (let lib of subgraph) {
+        subgraphNodes.push({
+          id: lib,
+          name: lib,
         });
+        for (let lib2 of this.migrationGraph[lib].toLibs) {
+          subgraphLinks.push({
+            id: subgraphLinks.length,
+            name: lib + " -> " + lib2,
+            source: lib,
+            target: lib2,
+          });
+        }
       }
+      this.echartGraphOptions = {
+        title: {
+          text: "Migration Graph",
+          subtext: "Default layout",
+          top: "bottom",
+          left: "right",
+        },
+        tooltip: {},
+        animationDuration: 1500,
+        animationEasingUpdate: "quinticInOut",
+        series: [
+          {
+            name: "Migration Graph",
+            type: "graph",
+            layout: "force",
+            data: subgraphNodes,
+            links: subgraphLinks,
+            roam: true,
+            focusNodeAdjacency: true,
+            itemStyle: {
+              borderColor: "#fff",
+              borderWidth: 1,
+              shadowBlur: 10,
+              shadowColor: "rgba(0, 0, 0, 0.3)",
+            },
+            label: {
+              position: "right",
+              formatter: "{b}",
+            },
+            lineStyle: {
+              color: "source",
+              curveness: 0.3,
+            },
+            emphasis: {
+              lineStyle: {
+                width: 10,
+              },
+            },
+          },
+        ],
+      };
     },
   },
 };
 </script>
+
+<style scoped>
+.graph-chart {
+  width: 80%;
+  height: 80%;
+  border: 1px;
+}
+
+.chart-in-card {
+  width: 100%;
+  height: 100%;
+}
+</style>

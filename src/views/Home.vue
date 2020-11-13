@@ -25,19 +25,19 @@
     </b-jumbotron>
     <b-card-group style="margin-bottom: 30px">
       <b-card>
-        <span class="big-number">21,358</span><br />
+        <animated-number :number="21358" /><br />
         GitHub Repositories Analyzed
       </b-card>
       <b-card>
-        <span class="big-number">185,817</span><br />
+        <animated-number :number="185817" /><br />
         Indexed Maven Artifacts
       </b-card>
       <b-card>
-        <span class="big-number">1,956,809</span><br />
+        <animated-number :number="1956809" /><br />
         Migration Advisories
       </b-card>
       <b-card>
-        <span class="big-number">1,384</span><br />
+        <animated-number :number="1384" /><br />
         Confirmed Migration Advisories
       </b-card>
     </b-card-group>
@@ -111,18 +111,13 @@
 
 <script>
 import LibrarySearchInput from "@/components/LibrarySearchInput.vue";
+import AnimatedNumber from "@/components/AnimatedNumber.vue";
 
 export default {
   name: "Home",
-  components: { LibrarySearchInput },
+  components: { LibrarySearchInput, AnimatedNumber },
   data: () => ({
     fromLib: "",
   }),
 };
 </script>
-
-<style scoped>
-.big-number {
-  font-size: xx-large;
-}
-</style>
