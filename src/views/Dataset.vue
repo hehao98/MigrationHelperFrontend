@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { getConfirmedMigrations } from "@/rest.js";
+import { getConfirmedMigrationsAsync } from "@/rest.js";
 import AnimatedNumber from "@/components/AnimatedNumber.vue";
 import SortedMap from "collections/sorted-map";
 
@@ -117,12 +117,12 @@ export default {
   }),
   computed: {},
   created: function() {
-    getConfirmedMigrations(0, this.batchSize).then((payload) => {
+    getConfirmedMigrationsAsync(0, this.batchSize).then((payload) => {
       this.totalElements = payload.page.totalElements;
       this.totalPages = payload.page.totalPages;
       this.updateMigrationData(payload);
       for (let i = 1; i < this.totalPages; ++i) {
-        getConfirmedMigrations(i, this.batchSize).then((payload2) => {
+        getConfirmedMigrationsAsync(i, this.batchSize).then((payload2) => {
           this.updateMigrationData(payload2);
         });
       }

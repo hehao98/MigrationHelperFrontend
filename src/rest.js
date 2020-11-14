@@ -54,8 +54,14 @@ async function getLibrarySimilarAsync(libName) {
   return await response.json();
 }
 
-async function getConfirmedMigrations(page, size) {
+async function getConfirmedMigrationsAsync(page, size) {
   const url = baseUrl + "confirmed-migrations?" + encodeQueryData({ page: page, size: size });
+  const response = await fetch(url);
+  return await response.json();
+}
+
+async function getCommitAsync(commitSHA) {
+  const url = baseUrl + "commits?" + encodeQueryData({ shas: commitSHA });
   const response = await fetch(url);
   return await response.json();
 }
@@ -66,5 +72,6 @@ export {
   getLibraryAsync,
   getLibraryWithPrefixAsync,
   getLibrarySimilarAsync,
-  getConfirmedMigrations
+  getConfirmedMigrationsAsync,
+  getCommitAsync
 };

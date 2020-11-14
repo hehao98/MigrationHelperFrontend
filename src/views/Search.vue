@@ -189,7 +189,7 @@ export default {
     tableFields: ["rank", "targetLibrary", "confidence", "RS", "MS", "AS", "DS", "showDetails"],
     maxConfidence: 5.0,
   }),
-  created: function() {
+  mounted: function() {
     this.$refs.table.refresh();
   },
   watch: {

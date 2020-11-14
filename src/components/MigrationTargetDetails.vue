@@ -52,9 +52,7 @@
         </span>
       </template>
       <template #head(startCommit)="data">
-        <span
-          v-b-tooltip.hover
-          :title="'The commit where ' + toLibrary + ' is added in pom.xml'"
+        <span v-b-tooltip.hover :title="'The commit where ' + toLibrary + ' is added in pom.xml'"
           >{{ data.label }}
         </span>
       </template>
@@ -66,9 +64,7 @@
         </span>
       </template>
       <template #head(fileName)="data">
-        <span
-          v-b-tooltip.hover
-          title="The path of pom.xml in this migration"
+        <span v-b-tooltip.hover title="The path of pom.xml in this migration"
           >{{ data.label }}
         </span>
       </template>
@@ -89,20 +85,24 @@
         </b-link>
       </template>
       <template #cell(startCommit)="data">
-        <b-link
-          :href="getGitHubCommitLink(data.item.repoName, data.value)"
-          target="_blank"
-        >
+        <b-link :href="getGitHubCommitLink(data.item.repoName, data.value)" target="_blank">
           <code>{{ data.value.substr(33, 7) }}</code>
         </b-link>
       </template>
       <template #cell(endCommit)="data">
-        <b-link
-          :href="getGitHubCommitLink(data.item.repoName, data.value)"
-          target="_blank"
-        >
+        <b-link :href="getGitHubCommitLink(data.item.repoName, data.value)" target="_blank">
           <code>{{ data.value.substr(33, 7) }}</code>
         </b-link>
+      </template>
+      <template #cell(showDetails)="row">
+        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+          {{ row.detailsShowing ? "Hide" : "Show" }} Details
+        </b-button>
+      </template>
+      <template #row-details="row">
+        <migration-details
+          :row="row"
+        ></migration-details>
       </template>
     </b-table>
   </b-card>
@@ -110,11 +110,12 @@
 
 <script>
 import LibraryCard from "@/components/LibraryCard.vue";
+import MigrationDetails from "@/components/MigrationDetails.vue";
 import { getRecommendationOneAync } from "@/rest.js";
 
 export default {
   props: ["fromLibrary", "toLibrary", "row"],
-  components: { LibraryCard },
+  components: { LibraryCard, MigrationDetails },
   data: () => ({
     loading: true,
     refs: [],
@@ -126,6 +127,7 @@ export default {
       { key: "startCommit", sortable: true },
       { key: "endCommit", sortable: true },
       "fileName",
+      "showDetails",
     ],
   }),
   created: function() {
@@ -144,18 +146,14 @@ export default {
       return "https://github.com/" + repoName.replace("_", "/");
     },
     getGitHubCommitLink(repoName, commit) {
-      return (
-        "https://github.com/" + repoName.replace("_", "/") + "/commit/" + commit
-      );
+      return "https://github.com/" + repoName.replace("_", "/") + "/commit/" + commit;
     },
     updateTable() {
       this.loading = true;
-      getRecommendationOneAync(this.fromLibrary, this.toLibrary).then(
-        (result) => {
-          this.refs = result.refs;
-          this.loading = false;
-        }
-      );
+      getRecommendationOneAync(this.fromLibrary, this.toLibrary).then((result) => {
+        this.refs = result.refs;
+        this.loading = false;
+      });
     },
   },
 };
