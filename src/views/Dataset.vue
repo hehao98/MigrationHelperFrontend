@@ -95,11 +95,12 @@ export default {
     commits: new Set(),
     rules: new Set(),
     repositories: new Set(),
+    year2migrationNum: {},
     migrations: [],
     id2arrayIndex: {},
     migrationGraph: {},
     connectedSubGraphs: [],
-    batchSize: 300,
+    batchSize: 500,
     totalElements: 14334,
     totalPages: 0,
     currentEchartIndex: 0,
@@ -130,14 +131,58 @@ export default {
         this.commits.add(mig.endCommit);
         this.repositories.add(mig.repoName);
         this.rules.add(mig.fromLib + " " + mig.toLib);
+        let date = new Date(mig.startCommitTime);
+        if (!(date.getFullYear() in this.year2migrationNum)) {
+          this.year2migrationNum[date.getFullYear()] = new Set();
+        } else {
+          this.year2migrationNum[date.getFullYear()].add(mig.startCommit);
+        }
       }
       this.updateGraphs();
     },
     updateGraphs() {
-      this.echartTimeOptions = {};
-      this.echartMigrationOptions = {};
-      this.echartSourceLibraryOptions = {};
-      this.echartTargetLibraryOptions = {};
+      let years = [];
+      let counts = [];
+      for (let year in this.year2migrationNum) {
+        years.push(year);
+      }
+      years.sort();
+      for (let year of years) {
+        counts.push(this.year2migrationNum[year].size);
+      }
+      this.echartTimeOptions = {
+        title: {
+          text: "Number of Confirmed Migration Commits by Time",
+        },
+        xAxis: {
+          type: "category",
+          data: years,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: counts,
+            type: "bar",
+          },
+        ],
+      };
+      this.echartMigrationOptions = {
+        title: {
+          text: "Most Frequent Migrations",
+        },
+      };
+      this.echartSourceLibraryOptions = {
+        title: {
+          text: "Most Frequently Migration Source Libraries",
+        },
+      };
+      this.echartTargetLibraryOptions = {
+        title: {
+          text: "Most Frequently Migration Target Libraries",
+        },
+      };
     },
     initGraphData() {
       if (this.migrations.length === 0) return;
@@ -282,6 +327,6 @@ export default {
 
 .chart-in-card {
   width: 100%;
-  height: 100%;
+  height: 400px;
 }
 </style>
