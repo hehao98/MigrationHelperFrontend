@@ -258,7 +258,7 @@ export default {
             label: {
               normal: {
                 position: "insideRight",
-                formatter: "{c}: {b}",
+                formatter: "{b} :{c}",
                 show: true,
                 textBorderColor: "#333",
                 textBorderWidth: 2,
@@ -445,6 +445,6 @@ export default {
 
 .chart-in-card {
   width: 100%;
-  height: 400px;
+  height: 500px;
 }
 </style>
