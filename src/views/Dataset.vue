@@ -1,5 +1,10 @@
 <template>
   <div class="dataset">
+    <b-alert show variant="warning"
+      >Currently this page is suffering from performance issues. We are sorry for the freezes and
+      low frame rates.</b-alert
+    >
+
     <h2 class="center">Overview of Our Confirmed Migration Dataset</h2>
 
     <p>
@@ -58,10 +63,6 @@
         (Still Loading)</span
       ></b-button
     >
-    <b-alert show variant="warning"
-      >Currently it is suffering from performance issues and not very useful. We welcome any
-      contributions for improving this.</b-alert
-    >
 
     <b-card no-body>
       <b-tabs card pills vertical>
@@ -88,6 +89,7 @@
 <script>
 import { getConfirmedMigrations } from "@/rest.js";
 import AnimatedNumber from "@/components/AnimatedNumber.vue";
+import SortedMap from "collections/sorted-map";
 
 export default {
   components: { AnimatedNumber },
@@ -95,7 +97,10 @@ export default {
     commits: new Set(),
     rules: new Set(),
     repositories: new Set(),
-    year2migrationNum: {},
+    year2migrationCommits: new SortedMap(),
+    rule2MigrationCommits: new SortedMap(),
+    fromLib2MigrationCommits: new SortedMap(),
+    toLib2MigrationCommits: new SortedMap(),
     migrations: [],
     id2arrayIndex: {},
     migrationGraph: {},
@@ -124,6 +129,10 @@ export default {
     });
   },
   methods: {
+    updateKey2CommitMap(sortedMap, key, ...commits) {
+      if (!sortedMap.has(key)) sortedMap.set(key, new Set());
+      sortedMap.get(key).add(...commits);
+    },
     updateMigrationData(payload) {
       this.migrations.push(...payload._embedded.wocConfirmedMigrations);
       for (let mig of payload._embedded.wocConfirmedMigrations) {
@@ -131,57 +140,166 @@ export default {
         this.commits.add(mig.endCommit);
         this.repositories.add(mig.repoName);
         this.rules.add(mig.fromLib + " " + mig.toLib);
-        let date = new Date(mig.startCommitTime);
-        if (!(date.getFullYear() in this.year2migrationNum)) {
-          this.year2migrationNum[date.getFullYear()] = new Set();
-        } else {
-          this.year2migrationNum[date.getFullYear()].add(mig.startCommit);
-        }
+        this.updateKey2CommitMap(
+          this.year2migrationCommits,
+          new Date(mig.startCommitTime).getFullYear(),
+          mig.startCommit,
+          mig.endCommit
+        );
+        this.updateKey2CommitMap(
+          this.rule2MigrationCommits,
+          mig.fromLib + " → " + mig.toLib,
+          mig.startCommit,
+          mig.endCommit
+        );
+        this.updateKey2CommitMap(
+          this.fromLib2MigrationCommits,
+          mig.fromLib,
+          mig.startCommit,
+          mig.endCommit
+        );
+        this.updateKey2CommitMap(
+          this.toLib2MigrationCommits,
+          mig.toLib,
+          mig.startCommit,
+          mig.endCommit
+        );
       }
       this.updateGraphs();
     },
     updateGraphs() {
-      let years = [];
-      let counts = [];
-      for (let year in this.year2migrationNum) {
-        years.push(year);
-      }
-      years.sort();
-      for (let year of years) {
-        counts.push(this.year2migrationNum[year].size);
-      }
       this.echartTimeOptions = {
         title: {
           text: "Number of Confirmed Migration Commits by Time",
         },
         xAxis: {
           type: "category",
-          data: years,
+          data: Array.from(this.year2migrationCommits.keys()),
+          axisLabel: {
+            show: true,
+          },
+          axisTick: {
+            alignWithLabel: true,
+          },
         },
         yAxis: {
           type: "value",
         },
         series: [
           {
-            data: counts,
+            data: Array.from(this.year2migrationCommits.values()).map((x) => x.size),
             type: "bar",
+            label: {
+              normal: {
+                show: true,
+                textBorderColor: "#333",
+                textBorderWidth: 2,
+              },
+            },
           },
         ],
       };
+      let migrations = Array.from(this.rule2MigrationCommits.entries());
+      migrations.sort((x, y) => y[1].size - x[1].size);
+      migrations = migrations.slice(0, 20);
       this.echartMigrationOptions = {
         title: {
-          text: "Most Frequent Migrations",
+          text: "Most Frequent Migrations by Commit",
         },
+        yAxis: {
+          type: "category",
+          data: migrations.map((x) => x[0]),
+          axisLabel: {
+            show: false,
+          },
+        },
+        xAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: migrations.map((x) => x[1].size),
+            type: "bar",
+            label: {
+              normal: {
+                position: "insideLeft",
+                formatter: "{c}: {b}",
+                show: true,
+                textBorderColor: "#333",
+                textBorderWidth: 2,
+              },
+            },
+          },
+        ],
       };
+
+      let fromLibs = Array.from(this.fromLib2MigrationCommits.entries());
+      fromLibs.sort((x, y) => y[1].size - x[1].size);
+      fromLibs = fromLibs.slice(0, 20);
       this.echartSourceLibraryOptions = {
         title: {
-          text: "Most Frequently Migration Source Libraries",
+          text: "Most Frequent Migration Source Libraries by Commit",
         },
+        yAxis: {
+          type: "category",
+          data: fromLibs.map((x) => x[0]),
+          axisLabel: {
+            show: false,
+          },
+        },
+        xAxis: {
+          type: "value",
+          inverse: true,
+        },
+        series: [
+          {
+            data: fromLibs.map((x) => x[1].size),
+            type: "bar",
+            label: {
+              normal: {
+                position: "insideRight",
+                formatter: "{c}: {b}",
+                show: true,
+                textBorderColor: "#333",
+                textBorderWidth: 2,
+              },
+            },
+          },
+        ],
       };
+
+      let toLibs = Array.from(this.toLib2MigrationCommits.entries());
+      toLibs.sort((x, y) => y[1].size - x[1].size);
+      toLibs = toLibs.slice(0, 20);
       this.echartTargetLibraryOptions = {
         title: {
-          text: "Most Frequently Migration Target Libraries",
+          text: "Most Frequent Migration Target Libraries by Commit",
         },
+        yAxis: {
+          type: "category",
+          data: toLibs.map((x) => x[0]),
+          axisLabel: {
+            show: false,
+          },
+        },
+        xAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: toLibs.map((x) => x[1].size),
+            type: "bar",
+            label: {
+              normal: {
+                position: "insideLeft",
+                formatter: "{c}: {b}",
+                show: true,
+                textBorderColor: "#333",
+                textBorderWidth: 2,
+              },
+            },
+          },
+        ],
       };
     },
     initGraphData() {
