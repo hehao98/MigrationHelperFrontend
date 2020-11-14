@@ -56,6 +56,28 @@
       ></b-card>
     </b-card-group>
 
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="migrations.length"
+      :per-page="perPage"
+      first-text="First"
+      prev-text="Prev"
+      next-text="Next"
+      last-text="Last"
+      first-number
+      last-number
+    ></b-pagination>
+
+    <b-table
+      striped
+      hover
+      responsive
+      :items="migrations"
+      :per-page="perPage"
+      :current-page="currentPage"
+      :fields="['fromLib', 'toLib', 'repoName', 'startCommit', 'endCommit', 'fileName']"
+    ></b-table>
+
     <hr class="my-4" />
 
     <b-button v-on:click="initGraphData()" class="m-1" variant="info"
@@ -114,6 +136,8 @@ export default {
     echartMigrationOptions: {},
     echartSourceLibraryOptions: {},
     echartTargetLibraryOptions: {},
+    perPage: 20,
+    currentPage: 1,
   }),
   computed: {},
   created: function() {
