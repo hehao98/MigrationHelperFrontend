@@ -1,6 +1,6 @@
 <template>
   <div class="dataset">
-    <b-alert show variant="warning"
+    <b-alert show variant="warning" dismissible
       >Currently this page is suffering from performance issues. We are sorry for the freezes and
       low frame rates.</b-alert
     >
