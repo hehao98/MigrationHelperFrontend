@@ -73,14 +73,14 @@ export default {
 #center-page {
   margin-top: 30px;
   margin-bottom: 30px;
-  margin-right: 50px;
-  margin-left: 50px;
+  margin-right: 5%;
+  margin-left: 5%;
 }
 
 #app-footer {
   text-align: center;
-  margin-right: 100px;
-  margin-left: 100px;
+  margin-right: 5%;
+  margin-left: 5%;
   margin-bottom: 30px;
 }
 </style>
