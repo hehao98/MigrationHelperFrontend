@@ -96,7 +96,7 @@
       style="margin-bottom: 30px"
       body-class="text-center"
     >
-      It is the <b>only</b> tool (within our knowledge) that can return migration advisories based on
+      It is the <b>first</b> tool (within our knowledge) that can return migration advisories based on
       <b>real world migrations</b> happened on GitHub.  <br />
       We believe real world migrations are valuable supplement to existing knowledge of similar
       libraries available on the Internet, <br />
