@@ -198,6 +198,9 @@ export default {
         },
         xAxis: {
           type: "category",
+          name: "Year",
+          nameLocation: "middle",
+          nameGap: 20,
           data: Array.from(this.year2migrationCommits.keys()),
           axisLabel: {
             show: true,
@@ -207,6 +210,9 @@ export default {
           },
         },
         yAxis: {
+          name: "Number of Commits",
+          nameLocation: "middle",
+          nameGap: 30,
           type: "value",
         },
         series: [
@@ -232,17 +238,23 @@ export default {
         },
         yAxis: {
           type: "category",
-          data: migrations.map((x) => x[0]),
+          name: "Source Library → Target Library",
+          nameLocation: "middle",
+          nameRotate: 90,
+          data: migrations.map((x) => x[0]).reverse(),
           axisLabel: {
             show: false,
           },
         },
         xAxis: {
           type: "value",
+          name: "Number of Migration Commits",
+          nameLocation: "middle",
+          nameGap: 20,
         },
         series: [
           {
-            data: migrations.map((x) => x[1].size),
+            data: migrations.map((x) => x[1].size).reverse(),
             type: "bar",
             label: {
               normal: {
@@ -262,22 +274,28 @@ export default {
       fromLibs = fromLibs.slice(0, 20);
       this.echartSourceLibraryOptions = {
         title: {
-          text: "Most Frequent Migration Source Libraries by Commit",
+          text: "Top Migration Source Libraries by Commit",
         },
         yAxis: {
           type: "category",
-          data: fromLibs.map((x) => x[0]),
+          name: "Source Library (with Number of Migration Commits)",
+          nameLocation: "middle",
+          nameRotate: 90,
+          data: fromLibs.map((x) => x[0]).reverse(),
           axisLabel: {
             show: false,
           },
         },
         xAxis: {
           type: "value",
+          name: "Number of Migration Commits",
+          nameLocation: "middle",
+          nameGap: 20,
           inverse: true,
         },
         series: [
           {
-            data: fromLibs.map((x) => x[1].size),
+            data: fromLibs.map((x) => x[1].size).reverse(),
             type: "bar",
             label: {
               normal: {
@@ -297,21 +315,27 @@ export default {
       toLibs = toLibs.slice(0, 20);
       this.echartTargetLibraryOptions = {
         title: {
-          text: "Most Frequent Migration Target Libraries by Commit",
+          text: "Top Migration Target Libraries by Commit",
         },
         yAxis: {
           type: "category",
-          data: toLibs.map((x) => x[0]),
+          name: "Target Library (with Number of Migration Commits)",
+          nameLocation: "middle",
+          nameRotate: 90,
+          data: toLibs.map((x) => x[0]).reverse(),
           axisLabel: {
             show: false,
           },
         },
         xAxis: {
           type: "value",
+          name: "Number of Migration Commits",
+          nameLocation: "middle",
+          nameGap: 20,
         },
         series: [
           {
-            data: toLibs.map((x) => x[1].size),
+            data: toLibs.map((x) => x[1].size).reverse(),
             type: "bar",
             label: {
               normal: {
