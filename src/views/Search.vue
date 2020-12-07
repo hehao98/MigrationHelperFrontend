@@ -166,7 +166,13 @@
       </b-col>
     </b-row>
 
-    <iframe src='https://www.wjx.cn/jq/97782777,i,t.aspx?width=760&source=iframe' width='100%' height='800' frameborder='0' style='overflow:auto'></iframe>
+    <!--<iframe
+      src="https://www.wjx.cn/jq/97782777,i,t.aspx?width=760&source=iframe"
+      width="100%"
+      height="800"
+      frameborder="0"
+      style="overflow:auto"
+    ></iframe>-->
   </div>
 </template>
 
