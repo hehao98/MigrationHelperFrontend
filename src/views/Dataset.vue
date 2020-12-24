@@ -377,9 +377,9 @@ export default {
           if (this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1) {
             // if edge doesn't exist
             this.migrationGraph[mig.fromLib].toLibs.push(mig.toLib);
-            this.migrationGraph[mig.fromLib].migrationsTo[mig.toLib] += 1;
-          } else {  // edge already exists
             this.migrationGraph[mig.fromLib].migrationsTo[mig.toLib] = 1;
+          } else {  // edge already exists
+            this.migrationGraph[mig.fromLib].migrationsTo[mig.toLib] += 1;
           }
         }
       }
@@ -391,8 +391,7 @@ export default {
             this.migrationGraph[toLib] = {
               toLibs: [],
               fromLibs: [fromLib],
-              migrations: [],
-              migrationsTo: {}
+              migrations: []
             };
           } else {
             this.migrationGraph[toLib].fromLibs.push(fromLib);
@@ -443,7 +442,7 @@ export default {
             target: lib2,
             label: {
               show: true,
-              formatter: this.migrationGraph[lib].migrationsTo[lib2]
+              formatter: String(this.migrationGraph[lib].migrationsTo[lib2])
             }
           });
         }
