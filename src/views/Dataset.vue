@@ -370,11 +370,16 @@ export default {
             toLibs: [mig.toLib],
             fromLibs: [],
             migrations: [i], // Only migrations from fromLib to toLibs
+            migrationsTo: {[mig.toLib]: 1}  // Counts migration to toLib
           };
         } else {
           this.migrationGraph[mig.fromLib].migrations.push(i);
           if (this.migrationGraph[mig.fromLib].toLibs.indexOf(mig.toLib) === -1) {
+            // if edge doesn't exist
             this.migrationGraph[mig.fromLib].toLibs.push(mig.toLib);
+            this.migrationGraph[mig.fromLib].migrationsTo[mig.toLib] = 1;
+          } else {  // edge already exists
+            this.migrationGraph[mig.fromLib].migrationsTo[mig.toLib] += 1;
           }
         }
       }
@@ -386,7 +391,7 @@ export default {
             this.migrationGraph[toLib] = {
               toLibs: [],
               fromLibs: [fromLib],
-              migrations: [],
+              migrations: []
             };
           } else {
             this.migrationGraph[toLib].fromLibs.push(fromLib);
@@ -435,9 +440,16 @@ export default {
             name: lib + " -> " + lib2,
             source: lib,
             target: lib2,
+            label: {
+              show: true,
+              formatter: String(this.migrationGraph[lib].migrationsTo[lib2])
+            }
           });
         }
       }
+
+      console.log(subgraph)
+
       this.echartGraphOptions = {
         title: {
           text: "Migration Graph",
@@ -457,6 +469,7 @@ export default {
             links: subgraphLinks,
             roam: true,
             focusNodeAdjacency: true,
+            edgeSymbol: ['none', 'arrow'],
             itemStyle: {
               borderColor: "#fff",
               borderWidth: 1,
