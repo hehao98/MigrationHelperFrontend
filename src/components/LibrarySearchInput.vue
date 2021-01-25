@@ -46,7 +46,7 @@
           >, press Enter!
         </div>
         <div v-if="suggested.length === 0 && fromLib !== '' && !loading">
-          Sorry, no library suggstions found for your input QAQ.
+          Sorry, no library suggestions found for your input...
         </div>
         <div v-if="suggested.length === 0 && fromLib === '' || loading">
           Type some Java library in <code>groupId:artifactId</code> format! (e.g.

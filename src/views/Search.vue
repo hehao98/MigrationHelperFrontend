@@ -166,13 +166,27 @@
       </b-col>
     </b-row>
 
-    <!--<iframe
-      src="https://www.wjx.cn/jq/97782777,i,t.aspx?width=760&source=iframe"
-      width="100%"
-      height="800"
-      frameborder="0"
-      style="overflow:auto"
-    ></iframe>-->
+    <b-tabs content-class="mt-3">
+      <b-tab title="User Survey (English)" active>
+        <iframe 
+          src="https://docs.google.com/forms/d/e/1FAIpQLSd_nW5f7z61L3e0GEEbGN5AeuYeoA2fS-blSYDEQ_NcwUOSLA/viewform?embedded=true" 
+          width="100%"
+          height="800" 
+          frameborder="0" 
+          marginheight="0" 
+          marginwidth="0">Loading Survey from Google Form...</iframe>
+      </b-tab>
+      <b-tab title="User Survey (Chinese)">
+        <iframe
+          src="https://www.wjx.cn/jq/97782777,i,t.aspx?width=760&source=iframe"
+          width="100%"
+          height="800"
+          frameborder="0"
+          style="overflow:auto"
+        ></iframe>
+      </b-tab>
+    </b-tabs>
+    
   </div>
 </template>
 
