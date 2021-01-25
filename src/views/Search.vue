@@ -186,7 +186,6 @@
         ></iframe>
       </b-tab>
     </b-tabs>
-    
   </div>
 </template>
 
