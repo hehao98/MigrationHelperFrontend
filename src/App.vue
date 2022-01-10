@@ -22,8 +22,8 @@
     <div id="app-footer">
       <hr class="my-4" />
       © Copyright 2020
-      <b-link href="https://hehao98.github.io/" target="_blank">Hao He</b-link>, Ph.D. candidate at
-      Peking University <br />
+      <b-link href="https://hehao98.github.io/" target="_blank">Hao He</b-link>, Ph.D. candidate in
+      <b-link href="https://github.com/osslab-pku" target="_blank">OSS Lab</b-link> at Peking University <br />
       Special Thanks to:
       <b-link href="http://worldofcode.org/" target="_blank">World of Code</b-link> led by
       <b-link href="https://mockus.org/" target="_blank">Prof. Audris Mockus</b-link> and Software
